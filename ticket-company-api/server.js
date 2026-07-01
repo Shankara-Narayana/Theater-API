@@ -10,16 +10,9 @@ app.use(express.json());
 
 let tickets = [];
 
-// External company API URLs
-const THEATER_API_URL = "http://localhost:3001";
-const PAYMENT_API_URL = "http://localhost:3002";
+const THEATER_API_URL = "http://localhost:3001"; //Theater API
+const PAYMENT_API_URL = "http://localhost:3002"; //Payment API
 
-/*
-BOOK TICKET API
-This communicates with:
-1. Theater Company API
-2. Payment Company API
-*/
 app.post("/ticket/book", async (req, res) => {
   const { customerName, seatNumber, amount } = req.body;
 
@@ -30,19 +23,19 @@ app.post("/ticket/book", async (req, res) => {
   }
 
   try {
-    // Step 1: Book seat from Theater Company
+    // Step 1: Book seat from Theater
     const seatResponse = await axios.post(`${THEATER_API_URL}/seats/book`, {
       seatNumber
     });
 
     try {
-      // Step 2: Make payment from Payment Company
+      // Step 2: Make payment from Payment
       const paymentResponse = await axios.post(`${PAYMENT_API_URL}/payment/pay`, {
         customerName,
         amount
       });
 
-      // Step 3: Create ticket in Ticket Company
+      // Step 3: Create ticket in Ticket
       const ticket = {
         ticketId: Date.now(),
         customerName,
@@ -81,12 +74,6 @@ app.post("/ticket/book", async (req, res) => {
   }
 });
 
-/*
-CANCEL TICKET API
-This communicates with:
-1. Payment Company API for refund
-2. Theater Company API for seat release
-*/
 app.post("/ticket/cancel", async (req, res) => {
   const { ticketId } = req.body;
 
